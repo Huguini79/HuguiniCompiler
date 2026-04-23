@@ -116,12 +116,12 @@ void separacionDetectada(std::string &buf, char op_separador) {
         buf = "";
     
     } else {
-        if (lastTypeToken == TokenType::Keyword && buf != "") {
+        if (buf != "") {
             tokens.push_back({buf, TokenType::Identifier, lexer.line});
             buf = "";
         }
     }
-    if (op_separador != ' ') {tokens.push_back({std::string(1, op_separador), TokenType::Separator, lexer.line});}
+    if (op_separador != ' ') {tokens.push_back({std::string(1, op_separador), TokenType::Separator, lexer.line});} 
 }
 
 void tokenize(std::string &source) {
