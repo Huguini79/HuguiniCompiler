@@ -9,7 +9,12 @@ enum IdentifierType {
 enum IdentifierKeywordType {
     Int,            // pos in enum = 0
     Char,           // pos in enum = 1
-    AFunction,      // pos in enum = 2
+    Float,          // pos in enum = 2
+    Uint8_t,        // pos in enum = 3
+    Uint16_t,       // pos in enum = 4
+    Uint32_t,       // pos in enum = 5
+    Uint64_t,        // pos in enum = 6
+    AFunction,      // pos in enum = 7
 };
 
 enum TokenType {
@@ -55,6 +60,7 @@ struct Lexer lexer;
 
 std::vector<Token> tokens = {};
 
+// Tabla de símbolos
 std::vector<AIdentifier> identifiers = {};
 
 std::vector<char> operator_symbols = {
@@ -67,6 +73,11 @@ std::vector<char> special_symbols = {
 
 std::vector<char> separator_symbols = {
     '{', '}', '(', ')', ';', '.', ':', '[', ']', ' '
+};
+
+std::vector<std::string> Keywords = {
+    "int", "char", "void", "return", "param", "print", "float",
+    "uint16_t", "uint32_t", "uint64_t", "uint8_t"
 };
 
 Token lastTypeToken;
@@ -101,6 +112,11 @@ std::string keywordTypeIdentToString(IdentifierKeywordType type) {
     switch (type) {
         case IdentifierKeywordType::Int: return "INT";
         case IdentifierKeywordType::Char: return "CHAR";
+        case IdentifierKeywordType::Float: return "FLOAT";
+        case IdentifierKeywordType::Uint8_t: return "UINT8_T";
+        case IdentifierKeywordType::Uint16_t: return "UINT16_T";
+        case IdentifierKeywordType::Uint32_t: return "UINT32_T";
+        case IdentifierKeywordType::Uint64_t: return "UINT64_T";
         case IdentifierKeywordType::AFunction: return "FUNCTION";
         default: return "UNKNOWN";
     }
@@ -134,15 +150,14 @@ bool isNumber(std::string &buffer) {
 }
 
 bool detectKeyword(std::string &buf) {
-    if (buf == "int") {return true;} 
-    else if (buf == "return") {return true;}
-    else if (buf == "char") {return true;}
-    else if (buf == "function") {return true;}
-    else if (buf == "print") {return true;}
-    else if (buf == "param") {return true;}
-    else {
-        return false;
+    for (auto a : Keywords) {
+        if (buf == a) {
+            return true;
+        }
     }
+
+    return false;
+
 }
 
 bool detectNumber(std::string &buf) {
@@ -172,7 +187,7 @@ void separationDetected(std::string &buf, char op_separador) {
 
             if (!theIdentifierIsInTheList(newIdentifier)) {
                 // No está en la lista de identificadores, vamos a añadirlo a la lista
-                if (lastTypeToken.value == "function" && lastTypeToken.type == TokenType::Keyword) {
+                if (lastTypeToken.value == "void" && lastTypeToken.type == TokenType::Keyword) {
                     identifiers.push_back({buf, IdentifierType::Function, IdentifierKeywordType::AFunction, lexer.line});
                     lastTypeToken = {buf, TokenType::Identifier, lexer.line};
                     buf = "";
@@ -188,9 +203,42 @@ void separationDetected(std::string &buf, char op_separador) {
                             identifiers.push_back({buf, IdentifierType::Variable, IdentifierKeywordType::Char, lexer.line});
                             lastTypeToken = {buf, TokenType::Identifier, lexer.line};
                             buf = "";
+                        }
+
+                else if ((lastTypeToken.value == "float")
+                        && lastTypeToken.type == TokenType::Keyword) {
+                            identifiers.push_back({buf, IdentifierType::Variable, IdentifierKeywordType::Float, lexer.line});
+                            lastTypeToken = {buf, TokenType::Identifier, lexer.line};
+                            buf = "";
+                        }
+                        
+                else if ((lastTypeToken.value == "uint8_t")
+                        && lastTypeToken.type == TokenType::Keyword) {
+                            identifiers.push_back({buf, IdentifierType::Variable, IdentifierKeywordType::Uint8_t, lexer.line});
+                            lastTypeToken = {buf, TokenType::Identifier, lexer.line};
+                            buf = "";
+                        
+                }   else if ((lastTypeToken.value == "uint16_t")
+                        && lastTypeToken.type == TokenType::Keyword) {
+                            identifiers.push_back({buf, IdentifierType::Variable, IdentifierKeywordType::Uint16_t, lexer.line});
+                            lastTypeToken = {buf, TokenType::Identifier, lexer.line};
+                            buf = "";
+                        }    
+
+                    else if ((lastTypeToken.value == "uint32_t")
+                        && lastTypeToken.type == TokenType::Keyword) {
+                            identifiers.push_back({buf, IdentifierType::Variable, IdentifierKeywordType::Uint32_t, lexer.line});
+                            lastTypeToken = {buf, TokenType::Identifier, lexer.line};
+                            buf = "";
+                        
+                }   else if ((lastTypeToken.value == "uint64_t")
+                        && lastTypeToken.type == TokenType::Keyword) {
+                            identifiers.push_back({buf, IdentifierType::Variable, IdentifierKeywordType::Uint64_t, lexer.line});
+                            lastTypeToken = {buf, TokenType::Identifier, lexer.line};
+                            buf = "";
                         }    
             } else {
-                if ((lastTypeToken.value == "int" || lastTypeToken.value == "char") && lastTypeToken.type == TokenType::Keyword) {
+                if ((lastTypeToken.value == "int" || lastTypeToken.value == "char" || lastTypeToken.value == "float" || lastTypeToken.value == "uint8_t" || lastTypeToken.value == "uint16_t" || lastTypeToken.value == "uint32_t" || lastTypeToken.value == "uint64_t") && lastTypeToken.type == TokenType::Keyword) {
                     std::cerr << "ERROR, THIS IDENTIFIER ALREDY EXITS: " << buf << " | Error in line: " << lexer.line << std::endl << std::endl;
                     exit(1);
                 }
