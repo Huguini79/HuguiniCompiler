@@ -20,9 +20,19 @@ int main() {
 
     }
 
+    std::cout << "-------------------------------------------------------" << std::endl << "LEXER" << std::endl << "-------------------------------------------------------" << std::endl << std::endl;
+
     for (int i = 0; i < tokens.size(); ++i) {
         Token* newToken = requestAnotherToken();
         std::cout << "{Value: " << newToken->value << " | Token Type: " << typeToString(newToken->type) << " | Line: " << newToken->line << "}" << std::endl;
+    }
+
+    std::cout << std::endl << std::endl;
+
+    std::cout << "-------------------------------------------------------" << std::endl << "IDENTIFIERS DECLARATION" << std::endl << "-------------------------------------------------------" << std::endl << std::endl;
+
+    for (int i = 0; i < identifiers.size(); ++i) {
+        std::cout << identifiers[i].value << " " << typeIdenttoString(identifiers[i].type)<< " | Line: " << identifiers[i].line << std::endl;
     }
 
 }

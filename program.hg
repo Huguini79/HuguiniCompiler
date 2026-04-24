@@ -1,2 +1,6 @@
-int x = 5;
-x = 6;
+function hola(int x) {
+    return x;
+}
+
+int resultado1 = hola(5);
+print resultado1;

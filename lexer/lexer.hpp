@@ -1,6 +1,11 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+enum IdentifierType {
+    Function,
+    Variable,
+};
+
 enum TokenType {
     Identifier,     // pos in enum = 0
     Number,         // pos in enum = 1
@@ -14,6 +19,14 @@ enum TokenType {
     Operator,       // pos in enum = 9
     Keyword,        // pos in enum = 10
     Separator,      // pos in enum = 11
+};
+
+struct AIdentifier {
+    std::string value;
+    IdentifierType type;
+
+    /* METADATA */
+    int line;
 };
 
 struct Token {
@@ -35,6 +48,8 @@ struct Lexer lexer;
 
 std::vector<Token> tokens = {};
 
+std::vector<AIdentifier> identifiers = {};
+
 std::vector<char> operator_symbols = {
     '=', '+', '-', '*', '/', '&', '|'
 };
@@ -47,24 +62,43 @@ std::vector<char> separator_symbols = {
     '{', '}', '(', ')', ';', '.', ':', '[', ']', ' '
 };
 
-TokenType lastTypeToken;
+Token lastTypeToken;
 
 std::string typeToString(TokenType type) {
     switch (type) {
-        case 0: return "TOKEN_IDENTIFIER";
-        case 1: return "TOKEN_NUMBER";
-        case 2: return "TOKEN_STRING";
-        case 3: return "TOKEN_EQUALS";
-        case 4: return "TOKEN_SPOT";
-        case 5: return "TOKEN_OPEN_PAREN";
-        case 6: return "TOKEN_CLOSE_PAREN";
-        case 7: return "TOKEN_OPEN_KEY";
-        case 8: return "TOKEN_CLOSE_KEY";
-        case 9: return "TOKEN_OPERATOR";
-        case 10: return "TOKEN_KEYWORD";
-        case 11: return "TOKEN_SEPARATOR";
+        case TokenType::Identifier: return "TOKEN_IDENTIFIER";
+        case TokenType::Number: return "TOKEN_NUMBER";
+        case TokenType::String: return "TOKEN_STRING";
+        case TokenType::Equals: return "TOKEN_EQUALS";
+        case TokenType::Spot: return "TOKEN_SPOT";
+        case TokenType::OpenParen: return "TOKEN_OPEN_PAREN";
+        case TokenType::CloseParen: return "TOKEN_CLOSE_PAREN";
+        case TokenType::OpenKey: return "TOKEN_OPEN_KEY";
+        case TokenType::CloseKey: return "TOKEN_CLOSE_KEY";
+        case TokenType::Operator: return "TOKEN_OPERATOR";
+        case TokenType::Keyword: return "TOKEN_KEYWORD";
+        case TokenType::Separator: return "TOKEN_SEPARATOR";
         default: return "TOKEN_UNKNOWN";
     }
+}
+
+std::string typeIdenttoString(IdentifierType type) {
+    switch (type) {
+        case IdentifierType::Function: return "FUNCTION";
+        case IdentifierType::Variable: return "VARIABLE";
+        default: return "UNKNOWN";
+    }
+}
+
+bool theIdentifierIsInTheList(AIdentifier* identifier) {
+    for (auto a : identifiers) {
+        if (a.value == identifier->value) {
+            return true;
+        }
+    }
+
+    return false;
+
 }
 
 struct Token* requestAnotherToken() {
@@ -92,6 +126,8 @@ bool detectKeyword(std::string &buf) {
     if (buf == "int") {return true;} 
     else if (buf == "return") {return true;}
     else if (buf == "char") {return true;}
+    else if (buf == "function") {return true;}
+    else if (buf == "print") {return true;}
     else {
         return false;
     }
@@ -104,20 +140,42 @@ bool detectNumber(std::string &buf) {
     }
 }
 
-void separacionDetectada(std::string &buf, char op_separador) {
+void separationDetected(std::string &buf, char op_separador) {
     if (detectKeyword(buf)) {
         tokens.push_back({buf, TokenType::Keyword, lexer.line});
-        lastTypeToken = TokenType::Keyword;
+        lastTypeToken = {buf, TokenType::Keyword, lexer.line};
         buf = "";
 
     } else if (detectNumber(buf)) {
         tokens.push_back({buf, TokenType::Number, lexer.line});
-        lastTypeToken = TokenType::Number;
+        lastTypeToken = {buf, TokenType::Number, lexer.line};
         buf = "";
     
     } else {
         if (buf != "") {
             tokens.push_back({buf, TokenType::Identifier, lexer.line});
+            
+            AIdentifier* newIdentifier = new AIdentifier();
+            newIdentifier->value = buf;
+
+            if (!theIdentifierIsInTheList(newIdentifier)) {
+                // No está en la lista de identificadores, vamos a añadirlo a la lista
+                if (lastTypeToken.value == "function" && lastTypeToken.type == TokenType::Keyword) {
+                    identifiers.push_back({buf, IdentifierType::Function, lexer.line});
+                    buf = "";
+                    
+                } else if (lastTypeToken.value == "int"
+                        || lastTypeToken.value == "char"
+                        && lastTypeToken.type == TokenType::Keyword) {
+                            identifiers.push_back({buf, IdentifierType::Variable, lexer.line});
+                            buf = "";
+                        }    
+            } else {
+                // Sí está en la lista, vamos a ver el tipo de Identificador (el identificador pertenece a una variable o función)
+
+            }
+            
+
             buf = "";
         }
     }
@@ -157,7 +215,7 @@ void tokenize(std::string &source) {
             for (auto a : separator_symbols) {
                     if (source[i] == a) {
                         char op_separador = a;
-                        separacionDetectada(buf, op_separador);
+                        separationDetected(buf, op_separador);
                     }
             }
 
