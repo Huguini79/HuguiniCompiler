@@ -103,13 +103,8 @@ bool theIdentifierIsInTheList(AIdentifier* identifier) {
 
 struct Token* requestAnotherToken() {
     lexer.pos_in_vector_tokens++;
-    
-    Token * token = new Token();
-    token->value = tokens[lexer.pos_in_vector_tokens].value;
-    token->type = tokens[lexer.pos_in_vector_tokens].type;
-    token->line = tokens[lexer.pos_in_vector_tokens].line;
 
-    return token;
+    return &tokens[lexer.pos_in_vector_tokens];
 
 }
 
@@ -189,12 +184,12 @@ void tokenize(std::string &source) {
         for (int i = 0; i < source.size(); ++i) {
             if (std::isalpha(source[i])) {
                 buf += source[i];
-                
+                continue;
             }
             
             if (std::isdigit(source[i])) {
                 buf += source[i];
-                
+                continue;
             }
 
             for (auto a : operator_symbols) {
@@ -216,6 +211,10 @@ void tokenize(std::string &source) {
                         char op_separador = a;
                         separationDetected(buf, op_separador);
                     }
+            }
+
+            if (source[i] == '_') {
+                buf += source[i];
             }
 
             /*

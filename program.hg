@@ -2,5 +2,10 @@ function hola(int x) {
     return x;
 }
 
+function hola_mundo(int a) {
+    int aa = a+1;
+    return a;
+}
+
 int resultado1 = hola(5);
 print resultado1;
