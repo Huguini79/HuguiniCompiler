@@ -1,6 +1,2 @@
-// Programita
-// En HuguiniLanguage
-
-int x = 0; // Funcionaaaaaaaaa
-int x2 = x; // Funcionaaaaaaaasaadaasdjasdlkasjdklasjdklasjasldjaslkdjl21318923u1203uaklsdklas
-return x2;
+int returnCode = 0;
+return returnCode;

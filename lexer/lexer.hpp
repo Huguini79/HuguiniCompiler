@@ -2,14 +2,14 @@
 #define LEXER_H
 
 enum IdentifierType {
-    Function,
-    Variable,
+    Function,       // pos in enum = 0
+    Variable,       // pos in enum = 1
 };
 
 enum IdentifierKeywordType {
-    Int,
-    Char,
-    AFunction,
+    Int,            // pos in enum = 0
+    Char,           // pos in enum = 1
+    AFunction,      // pos in enum = 2
 };
 
 enum TokenType {
@@ -208,16 +208,16 @@ void tokenize(std::string &source) {
 
     lexer.line++;
     
-        for (int i = 0; i < source.size(); ++i) {
-            
-            if (source[i] == '/' && source[i+1] == '/') {
-                break;
-            }
-
-            if (std::isalpha(source[i])) {
-                buf += source[i];
-                continue;
-            }
+    for (int i = 0; i < source.size(); ++i) {
+    
+    if (source[i] == '/' && source[i+1] == '/') {
+        break;
+    }
+    
+    if (std::isalpha(source[i])) {
+        buf += source[i];
+        continue;
+    }
             
             if (std::isdigit(source[i])) {
                 buf += source[i];
