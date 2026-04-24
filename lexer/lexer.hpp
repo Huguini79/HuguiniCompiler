@@ -171,7 +171,6 @@ void separationDetected(std::string &buf, char op_separador) {
                             buf = "";
                         }    
             } else {
-                // Sí está en la lista, vamos a ver el tipo de Identificador (el identificador pertenece a una variable o función)
 
             }
             
