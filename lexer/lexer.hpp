@@ -6,6 +6,12 @@ enum IdentifierType {
     Variable,
 };
 
+enum IdentifierKeywordType {
+    Int,
+    Char,
+    AFunction,
+};
+
 enum TokenType {
     Identifier,     // pos in enum = 0
     Number,         // pos in enum = 1
@@ -24,6 +30,7 @@ enum TokenType {
 struct AIdentifier {
     std::string value;
     IdentifierType type;
+    IdentifierKeywordType keyword_type;
 
     /* METADATA */
     int line;
@@ -90,6 +97,15 @@ std::string typeIdenttoString(IdentifierType type) {
     }
 }
 
+std::string keywordTypeIdentToString(IdentifierKeywordType type) {
+    switch (type) {
+        case IdentifierKeywordType::Int: return "INT";
+        case IdentifierKeywordType::Char: return "CHAR";
+        case IdentifierKeywordType::AFunction: return "FUNCTION";
+        default: return "UNKNOWN";
+    }
+}
+
 bool theIdentifierIsInTheList(AIdentifier identifier) {
     for (auto a : identifiers) {
         if (a.value == identifier.value) {
@@ -123,6 +139,7 @@ bool detectKeyword(std::string &buf) {
     else if (buf == "char") {return true;}
     else if (buf == "function") {return true;}
     else if (buf == "print") {return true;}
+    else if (buf == "param") {return true;}
     else {
         return false;
     }
@@ -156,14 +173,19 @@ void separationDetected(std::string &buf, char op_separador) {
             if (!theIdentifierIsInTheList(newIdentifier)) {
                 // No está en la lista de identificadores, vamos a añadirlo a la lista
                 if (lastTypeToken.value == "function" && lastTypeToken.type == TokenType::Keyword) {
-                    identifiers.push_back({buf, IdentifierType::Function, lexer.line});
+                    identifiers.push_back({buf, IdentifierType::Function, IdentifierKeywordType::AFunction, lexer.line});
                     lastTypeToken = {buf, TokenType::Identifier, lexer.line};
                     buf = "";
                     
-                } else if ((lastTypeToken.value == "int"
-                        || lastTypeToken.value == "char")
+                } else if ((lastTypeToken.value == "int")
                         && lastTypeToken.type == TokenType::Keyword) {
-                            identifiers.push_back({buf, IdentifierType::Variable, lexer.line});
+                            identifiers.push_back({buf, IdentifierType::Variable, IdentifierKeywordType::Int, lexer.line});
+                            lastTypeToken = {buf, TokenType::Identifier, lexer.line};
+                            buf = "";
+                        
+                }   else if ((lastTypeToken.value == "char")
+                        && lastTypeToken.type == TokenType::Keyword) {
+                            identifiers.push_back({buf, IdentifierType::Variable, IdentifierKeywordType::Char, lexer.line});
                             lastTypeToken = {buf, TokenType::Identifier, lexer.line};
                             buf = "";
                         }    
@@ -187,6 +209,11 @@ void tokenize(std::string &source) {
     lexer.line++;
     
         for (int i = 0; i < source.size(); ++i) {
+            
+            if (source[i] == '/' && source[i+1] == '/') {
+                break;
+            }
+
             if (std::isalpha(source[i])) {
                 buf += source[i];
                 continue;

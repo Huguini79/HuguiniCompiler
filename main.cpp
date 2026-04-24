@@ -27,14 +27,12 @@ int main() {
         std::cout << "{Value: " << newToken->value << " | Token Type: " << typeToString(newToken->type) << " | Line: " << newToken->line << "}" << std::endl;
     }
 
-    std::cout << std::endl << std::endl;
-
-    std::cout << lastTypeToken.value << std::endl << std::endl;
+    std::cout << std::endl;
 
     std::cout << "-------------------------------------------------------" << std::endl << "IDENTIFIERS DECLARATION" << std::endl << "-------------------------------------------------------" << std::endl << std::endl;
 
     for (int i = 0; i < identifiers.size(); ++i) {
-        std::cout << identifiers[i].value << " " << typeIdenttoString(identifiers[i].type)<< " | Line: " << identifiers[i].line << std::endl;
+        std::cout << identifiers[i].value << " " << typeIdenttoString(identifiers[i].type) << " " << keywordTypeIdentToString(identifiers[i].keyword_type) << " | Line: " << identifiers[i].line << std::endl;
     }
 
 }

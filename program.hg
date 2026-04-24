@@ -1,7 +1,6 @@
-function hola() {
-    return 0;
-}
+// Programita
+// En HuguiniLanguage
 
-int x = hola(6);
-x = 2;
-return x;
+int x = 0; // Funcionaaaaaaaaa
+int x2 = x; // Funcionaaaaaaaasaadaasdjasdlkasjdklasjdklasjasldjaslkdjl21318923u1203uaklsdklas
+return x2;
