@@ -90,9 +90,9 @@ std::string typeIdenttoString(IdentifierType type) {
     }
 }
 
-bool theIdentifierIsInTheList(AIdentifier* identifier) {
+bool theIdentifierIsInTheList(AIdentifier identifier) {
     for (auto a : identifiers) {
-        if (a.value == identifier->value) {
+        if (a.value == identifier.value) {
             return true;
         }
     }
@@ -150,23 +150,28 @@ void separationDetected(std::string &buf, char op_separador) {
         if (buf != "") {
             tokens.push_back({buf, TokenType::Identifier, lexer.line});
             
-            AIdentifier* newIdentifier = new AIdentifier();
-            newIdentifier->value = buf;
+            AIdentifier newIdentifier;
+            newIdentifier.value = buf;
 
             if (!theIdentifierIsInTheList(newIdentifier)) {
                 // No está en la lista de identificadores, vamos a añadirlo a la lista
                 if (lastTypeToken.value == "function" && lastTypeToken.type == TokenType::Keyword) {
                     identifiers.push_back({buf, IdentifierType::Function, lexer.line});
+                    lastTypeToken = {buf, TokenType::Identifier, lexer.line};
                     buf = "";
                     
-                } else if (lastTypeToken.value == "int"
-                        || lastTypeToken.value == "char"
+                } else if ((lastTypeToken.value == "int"
+                        || lastTypeToken.value == "char")
                         && lastTypeToken.type == TokenType::Keyword) {
                             identifiers.push_back({buf, IdentifierType::Variable, lexer.line});
+                            lastTypeToken = {buf, TokenType::Identifier, lexer.line};
                             buf = "";
                         }    
             } else {
-
+                if ((lastTypeToken.value == "int" || lastTypeToken.value == "char") && lastTypeToken.type == TokenType::Keyword) {
+                    std::cerr << "ERROR, THIS IDENTIFIER ALREDY EXITS: " << buf << " | Error in line: " << lexer.line << std::endl << std::endl;
+                    exit(1);
+                }
             }
             
 
@@ -195,6 +200,7 @@ void tokenize(std::string &source) {
             for (auto a : operator_symbols) {
                 if (source[i] == a) {
                     tokens.push_back({std::string(1, a), TokenType::Operator, lexer.line});
+                    lastTypeToken = {std::string(1, a), TokenType::Operator, lexer.line};
                     buf = "";
                 }
                 

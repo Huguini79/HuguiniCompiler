@@ -29,6 +29,8 @@ int main() {
 
     std::cout << std::endl << std::endl;
 
+    std::cout << lastTypeToken.value << std::endl << std::endl;
+
     std::cout << "-------------------------------------------------------" << std::endl << "IDENTIFIERS DECLARATION" << std::endl << "-------------------------------------------------------" << std::endl << std::endl;
 
     for (int i = 0; i < identifiers.size(); ++i) {

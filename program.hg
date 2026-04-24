@@ -1,11 +1,7 @@
-function hola(int x) {
-    return x;
+function hola() {
+    return 0;
 }
 
-function hola_mundo(int a) {
-    int aa = a+1;
-    return a;
-}
-
-int resultado1 = hola(5);
-print resultado1;
+int x = hola(6);
+x = 2;
+return x;
