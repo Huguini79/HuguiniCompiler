@@ -2,10 +2,14 @@
 global _start
 
 _start:
-    ; return  x;
-    mov rax, 60
-    mov rdi, x
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, hola
+    mov rdx, $ - hola
     syscall
 
-x        dw          0      ; int x = 0;
-holaMundo        dw          10      ; int holaMundo = 10;
+    ; return 0;
+    mov rax, 60
+    mov rdi, 0
+    syscall
+

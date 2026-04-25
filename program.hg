@@ -1,5 +1,5 @@
 start:
-    return x;
+    print hola;
+    return 0;
 
-int x = 0;
-int holaMundo = 10;
+char hola = "Hugo";

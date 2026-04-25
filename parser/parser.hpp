@@ -10,6 +10,9 @@ std::vector<TokenType> variable_int_grammar = {TokenType::Keyword, TokenType::Id
 // Palabra reservada + Token numérico + Separador (punto y coma)
 std::vector<TokenType> return_grammar = {TokenType::Keyword, TokenType::Number, TokenType::Separator};
 
+// Palabra reservada + Identifier + Separador (punto y coma)
+std::vector<TokenType> print_grammar = {TokenType::Keyword, TokenType::Identifier, TokenType::Separator};
+
 // Tokens
 Token *newToken;
 Token *anotherToken;
@@ -21,11 +24,19 @@ Token *anotherToken5;
 bool checkReturn(Token *newToken)
 {
     int origin = lexer.pos_in_vector_tokens;
-    if (newToken->type == return_grammar[0]) // return
+    if (newToken->type == return_grammar[0] && newToken->value == "return") // return
     {
         anotherToken = requestAnotherToken();
-        if (anotherToken->type == return_grammar[1] || anotherToken->type == TokenType::Identifier) // number
+        if (anotherToken->type == return_grammar[1]) // number
         {
+            anotherToken2 = requestAnotherToken(); // ;
+            if (anotherToken2->type == return_grammar[2])
+            {
+                return true;
+            }
+        }
+        else if (anotherToken->type == TokenType::Identifier)
+        {                                          // identifier
             anotherToken2 = requestAnotherToken(); // ;
             if (anotherToken2->type == return_grammar[2])
             {
@@ -75,6 +86,27 @@ bool checkVariable(Token *newToken)
     return false;
 }
 
+bool checkPrint(Token *newToken)
+{
+    int origin = lexer.pos_in_vector_tokens;
+
+    if (newToken->type == print_grammar[0] && newToken->value == "print")
+    {
+        anotherToken = requestAnotherToken();
+        if (anotherToken->type == print_grammar[1])
+        {
+            anotherToken2 = requestAnotherToken();
+            if (anotherToken2->type == print_grammar[2])
+            {
+                return true;
+            }
+        }
+    }
+
+    lexer.pos_in_vector_tokens = origin;
+    return false;
+}
+
 void check(Token *newToken)
 {
     lexer.pos_in_vector_tokens = -1;
@@ -82,7 +114,8 @@ void check(Token *newToken)
     {
         newToken = requestAnotherToken();
 
-        if (checkStart(newToken)) {
+        if (checkStart(newToken))
+        {
             CodeGenCreateStart();
         }
         else if (checkVariable(newToken))
@@ -92,6 +125,10 @@ void check(Token *newToken)
         else if (checkReturn(newToken))
         {
             CodeGenCreateReturn(anotherToken);
+        }
+        else if (checkPrint(newToken))
+        {
+            CodeGenCreatePrint(anotherToken);
         }
     }
 }

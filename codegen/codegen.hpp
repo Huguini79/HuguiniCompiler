@@ -1,6 +1,8 @@
 #ifndef CODEGEN_H
 #define CODEGEN_H
 
+int variable_offset = 0;
+
 std::ofstream compiled("program.asm");
 
 void CodeGenCreateStart()
@@ -13,15 +15,39 @@ void CodeGenCreateStart()
 
 void CodeGenCreateReturn(Token *anotherToken)
 {
-    compiled << "    ; return " << " " << anotherToken->value << ";" << std::endl;
-    compiled << "    mov rax, 60" << std::endl;
-    compiled << "    mov rdi, " << anotherToken->value << std::endl;
-    compiled << "    syscall" << std::endl << std::endl;
+    if (anotherToken->type == TokenType::Number) {
+        compiled << "    ; return " << anotherToken->value << ";" << std::endl;
+        compiled << "    mov rax, 60" << std::endl;
+        compiled << "    mov rdi, " << anotherToken->value << std::endl;
+        compiled << "    syscall" << std::endl << std::endl;
+
+    } else if (anotherToken->type == TokenType::Identifier) {
+        compiled << "    ; return " << anotherToken->value << ";" << std::endl;
+        compiled << "    mov rax, 60" << std::endl;
+        compiled << "    movzx rdi, word [" << anotherToken->value << "]" << std::endl;
+        compiled << "    syscall" << std::endl << std::endl;
+    }
 }
 
 void CodeGenCreateVariable(Token* anotherToken, Token* anotherToken3) {
-    compiled << anotherToken->value << "        dw          " << anotherToken3->value;
-    compiled << "      ; int " << anotherToken->value << " = " << anotherToken3->value << ";" << std::endl;
+    if (variable_offset == 0) {
+        variable_offset++;
+        compiled << "section .data" << std::endl;
+        compiled << anotherToken->value << "        dw          " << anotherToken3->value;
+        compiled << "      ; int " << anotherToken->value << " = " << anotherToken3->value << ";" << std::endl;
+
+    } else {
+        compiled << anotherToken->value << "        dw          " << anotherToken3->value;
+        compiled << "      ; int " << anotherToken->value << " = " << anotherToken3->value << ";" << std::endl;
+    }
+}
+
+void CodeGenCreatePrint(Token* anotherToken) {
+    compiled << "    mov rax, 1" << std::endl;
+    compiled << "    mov rdi, 1" << std::endl;
+    compiled << "    mov rsi, " << anotherToken->value << std::endl;
+    compiled << "    mov rdx, $ - " << anotherToken->value << std::endl;
+    compiled << "    syscall" << std::endl << std::endl;
 }
 
 #endif
