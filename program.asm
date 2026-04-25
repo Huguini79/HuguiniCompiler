@@ -2,6 +2,10 @@
 global _start
 
 _start:
+    ; return  x;
     mov rax, 60
-    mov rdi, 255
+    mov rdi, x
     syscall
+
+x        dw          0      ; int x = 0;
+holaMundo        dw          10      ; int holaMundo = 10;

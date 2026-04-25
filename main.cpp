@@ -30,9 +30,10 @@ int main()
     }
     else
     {
+        Token *newToken;
         for (int i = 0; i < tokens.size(); ++i)
         {
-            Token *newToken = requestAnotherToken();
+            newToken = requestAnotherToken();
             std::cout << "{Value: " << newToken->value << " | Token Type: " << typeToString(newToken->type) << " | Line: " << newToken->line << "}" << std::endl;
         }
     }

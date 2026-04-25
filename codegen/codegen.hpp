@@ -13,9 +13,15 @@ void CodeGenCreateStart()
 
 void CodeGenCreateReturn(Token *anotherToken)
 {
+    compiled << "    ; return " << " " << anotherToken->value << ";" << std::endl;
     compiled << "    mov rax, 60" << std::endl;
     compiled << "    mov rdi, " << anotherToken->value << std::endl;
-    compiled << "    syscall" << std::endl;
+    compiled << "    syscall" << std::endl << std::endl;
+}
+
+void CodeGenCreateVariable(Token* anotherToken, Token* anotherToken3) {
+    compiled << anotherToken->value << "        dw          " << anotherToken3->value;
+    compiled << "      ; int " << anotherToken->value << " = " << anotherToken3->value << ";" << std::endl;
 }
 
 #endif

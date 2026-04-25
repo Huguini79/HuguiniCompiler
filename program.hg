@@ -1,2 +1,5 @@
 start:
-    return 255;
+    return x;
+
+int x = 0;
+int holaMundo = 10;
